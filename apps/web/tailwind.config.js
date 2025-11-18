@@ -31,6 +31,7 @@ export default {
         border: {
           DEFAULT: 'var(--border)',
           hover: 'var(--border-hover)',
+          divider: 'var(--divider)',
         },
         success: {
           DEFAULT: 'var(--success)',

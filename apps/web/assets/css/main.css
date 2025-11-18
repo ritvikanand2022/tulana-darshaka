@@ -121,26 +121,8 @@
 }
 
 @layer components {
-  /* Typography */
-  .text-display {
-    @apply text-display font-bold tracking-tight;
-  }
-
-  .text-h1 {
-    @apply text-h1 font-semibold tracking-tight;
-  }
-
-  .text-h2 {
-    @apply text-h2 font-semibold;
-  }
-
-  .text-h3 {
-    @apply text-h3 font-semibold;
-  }
-
-  .text-h4 {
-    @apply text-h4 font-semibold;
-  }
+  /* Typography helpers are now defined in tailwind.config.js */
+  /* Use text-display, text-h1, text-h2, text-h3, text-h4 directly */
 
   /* Container */
   .container-custom {
@@ -211,7 +193,7 @@
 
   /* Divider */
   .divider {
-    @apply border-t border-divider;
+    @apply border-t border-border-divider;
   }
 }
 

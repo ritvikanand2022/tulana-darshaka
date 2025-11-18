@@ -35,7 +35,7 @@ async function fetchSuggestions(searchQuery: string) {
 
   isLoading.value = true
   try {
-    const data = await $fetch(`${config.public.apiUrl}/api/search/suggestions?q=${encodeURIComponent(searchQuery)}&limit=8`)
+    const data = await $fetch<{ suggestions: any[] }>(`${config.public.apiUrl}/api/search/suggestions?q=${encodeURIComponent(searchQuery)}&limit=8`)
     suggestions.value = data.suggestions || []
   } catch (error) {
     console.error('Failed to fetch suggestions:', error)

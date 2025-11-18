@@ -128,6 +128,11 @@
 </template>
 
 <script setup lang="ts">
+interface Category {
+  id: string
+  name: string
+}
+
 definePageMeta({
   layout: 'default',
 })
@@ -143,8 +148,8 @@ const sortBy = ref('createdAt:desc')
 const filters = ref<Record<string, any>>({})
 
 // Fetch categories
-const { data: categoriesData } = await useFetch(`${config.public.apiUrl}/api/categories`)
-const categories = computed(() => categoriesData.value || [])
+const { data: categoriesData } = await useFetch<{ categories: Category[] }>(`${config.public.apiUrl}/api/categories`)
+const categories = computed(() => categoriesData.value?.categories || [])
 
 // Fetch products with filters
 const queryParams = computed(() => {
@@ -159,7 +164,7 @@ const queryParams = computed(() => {
   }
 })
 
-const { data: productsData, pending } = await useFetch(
+const { data: productsData, pending } = await useFetch<{ products: any[]; total: number; totalPages: number }>(
   () => `${config.public.apiUrl}/api/products`,
   {
     query: queryParams,
@@ -172,7 +177,7 @@ const total = computed(() => productsData.value?.total || 0)
 const totalPages = computed(() => productsData.value?.totalPages || 1)
 
 // Get unique brands from products
-const brands = computed(() => {
+const brands = computed<string[]>(() => {
   const brandSet = new Set(products.value.map((p: any) => p.brand))
   return Array.from(brandSet).sort()
 })

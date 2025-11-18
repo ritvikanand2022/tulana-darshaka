@@ -303,7 +303,7 @@ const formatPrice = (price: number) => {
   aspect-ratio: 1;
   display: flex;
   align-items: center;
-  justify-center;
+  justify-content: center;
   background: var(--bg-tertiary);
   border-radius: 6px;
   margin-bottom: 0.75rem;

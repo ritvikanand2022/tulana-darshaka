@@ -105,7 +105,7 @@ if (route.query.products) {
 }
 
 // Fetch products from API
-const { data: comparisonData, pending } = await useFetch(
+const { data: comparisonData, pending } = await useFetch<{ products?: any[] }>(
   () => `${config.public.apiUrl}/api/comparisons/preview`,
   {
     query: {
@@ -131,7 +131,7 @@ const handleRemoveProduct = (productId: string) => {
 // Handle share
 const handleShare = async () => {
   try {
-    const comparison = await comparisonStore.saveComparison()
+    const comparison = await comparisonStore.saveComparison() as any
     const shareUrl = `${config.public.siteUrl}/compare/${comparison.slug}`
 
     if (navigator.share) {

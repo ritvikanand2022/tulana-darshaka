@@ -10,7 +10,7 @@
             </h1>
             <p class="text-text-secondary">
               {{ comparison.products?.length }} products compared
-              <span v-if="comparison.views > 0" class="ml-2">
+              <span v-if="comparison.views && comparison.views > 0" class="ml-2">
                 • {{ comparison.views }} views
               </span>
             </p>
@@ -45,6 +45,13 @@
 </template>
 
 <script setup lang="ts">
+interface Comparison {
+  title?: string
+  products?: any[]
+  views?: number
+  slug?: string
+}
+
 definePageMeta({
   layout: 'default',
 })
@@ -52,10 +59,14 @@ definePageMeta({
 const route = useRoute()
 const config = useRuntimeConfig()
 
-const slug = computed(() => route.params.slug as string)
+const slug = computed(() => {
+  const params = route.params as { slug?: string | string[] }
+  const slugParam = params.slug
+  return typeof slugParam === 'string' ? slugParam : Array.isArray(slugParam) ? slugParam[0] : ''
+})
 
 // Fetch comparison by slug
-const { data: comparison } = await useFetch(
+const { data: comparison } = await useFetch<Comparison>(
   () => `${config.public.apiUrl}/api/comparisons/slug/${slug.value}`,
   {
     watch: [slug],

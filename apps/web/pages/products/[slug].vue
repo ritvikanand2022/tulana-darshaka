@@ -58,7 +58,7 @@
           <h1 class="text-h1 mb-4">{{ product.name }}</h1>
 
           <div class="flex items-center gap-4 mb-6">
-            <div class="text-display text-accent">{{ formatPrice(product.price) }}</div>
+            <div class="text-display text-accent">{{ formatPrice(product.price || 0) }}</div>
             <div
               class="px-3 py-1 rounded-full text-sm font-medium"
               :class="stockStatusClass"
@@ -194,7 +194,7 @@
         <!-- Review Form -->
         <div v-if="showReviewForm" class="mb-8">
           <ReviewForm
-            :product-id="product!.id"
+            :product-id="product?.id || ''"
             @submit="handleReviewSubmit"
             @cancel="showReviewForm = false"
           />
@@ -312,6 +312,20 @@
 </template>
 
 <script setup lang="ts">
+interface Product {
+  id?: string
+  name?: string
+  brand?: string
+  description?: string
+  price?: number
+  images?: Array<{ url: string; alt?: string }>
+  specifications?: any
+  priceHistory?: any[]
+  stockStatus?: string
+  category?: { name?: string; slug?: string }
+  slug?: string
+}
+
 definePageMeta({
   layout: 'default',
 })
@@ -319,10 +333,14 @@ definePageMeta({
 const route = useRoute()
 const config = useRuntimeConfig()
 
-const slug = computed(() => route.params.slug as string)
+const slug = computed(() => {
+  const params = route.params as { slug?: string | string[] }
+  const slugParam = params.slug
+  return typeof slugParam === 'string' ? slugParam : Array.isArray(slugParam) ? slugParam[0] : ''
+})
 
 // Fetch product
-const { data: product } = await useFetch(
+const { data: product } = await useFetch<Product>(
   () => `${config.public.apiUrl}/api/products/slug/${slug.value}`,
   {
     watch: [slug],
@@ -375,7 +393,7 @@ async function loadReviews() {
       params.append('verified', 'true')
     }
 
-    const data = await $fetch(`${config.public.apiUrl}/api/reviews?${params.toString()}`)
+    const data = await $fetch<{ reviews: any[]; page: number; pageSize: number; total: number; totalPages: number }>(`${config.public.apiUrl}/api/reviews?${params.toString()}`)
 
     reviews.value = data.reviews
     reviewPagination.value = {

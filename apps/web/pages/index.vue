@@ -145,7 +145,7 @@ const { data: categories } = await useFetch(
 )
 
 // Fetch stats
-const { data: productStats } = await useFetch(
+const { data: productStats } = await useFetch<{ total?: number }>(
   `${config.public.apiUrl}/api/products/statistics`
 )
 

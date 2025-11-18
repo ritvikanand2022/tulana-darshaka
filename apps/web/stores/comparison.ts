@@ -66,7 +66,7 @@ export const useComparisonStore = defineStore('comparison', {
     toggleProduct(product: Product) {
       if (this.isProductInComparison(product.id)) {
         this.removeProduct(product.id)
-        return { added: false }
+        return { added: false, success: true, message: 'Product removed from comparison' }
       } else {
         const result = this.addProduct(product)
         return { added: result.success, ...result }
