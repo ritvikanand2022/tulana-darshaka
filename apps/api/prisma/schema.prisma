@@ -1,0 +1,342 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// USER MANAGEMENT
+// ============================================================
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  username        String?   @unique
+  name            String?
+  avatar          String?
+  bio             String?
+  password        String    // Hashed
+  role            UserRole  @default(USER)
+  reputation      Int       @default(0)
+  badges          String[]
+  emailVerified   Boolean   @default(false)
+  preferences     Json?     // User preferences
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  reviews         Review[]
+  reviewVotes     ReviewVote[]
+  reviewResponses ReviewResponse[]
+  comparisons     Comparison[]
+  wishlists       Wishlist[]
+  priceAlerts     PriceAlert[]
+
+  @@index([email])
+  @@index([username])
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+// ============================================================
+// PRODUCT MANAGEMENT
+// ============================================================
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  parentId    String?
+  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children    Category[] @relation("SubCategories")
+  products    Product[]
+  specFields  Json?      // Custom fields for this category
+  icon        String?
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([parentId])
+  @@index([slug])
+  @@map("categories")
+}
+
+model Product {
+  id              String        @id @default(cuid())
+  name            String
+  brand           String
+  model           String?
+  slug            String        @unique
+  description     String?       @db.Text
+  price           Decimal       @db.Decimal(10, 2)
+  currency        String        @default("USD")
+  specifications  Json?         // Flexible spec storage
+  categoryId      String
+  category        Category      @relation(fields: [categoryId], references: [id])
+  status          ProductStatus @default(ACTIVE)
+  stockStatus     StockStatus   @default(IN_STOCK)
+  releaseDate     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  images          Image[]
+  affiliateLinks  AffiliateLink[]
+  reviews         Review[]
+  priceHistory    PriceHistory[]
+  wishlists       Wishlist[]
+  priceAlerts     PriceAlert[]
+
+  @@index([categoryId])
+  @@index([slug])
+  @@index([status])
+  @@index([brand])
+  @@map("products")
+}
+
+model Image {
+  id          String   @id @default(cuid())
+  url         String
+  alt         String?
+  width       Int?
+  height      Int?
+  size        Int?
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([productId])
+  @@map("images")
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
+}
+
+enum StockStatus {
+  IN_STOCK
+  OUT_OF_STOCK
+  PRE_ORDER
+  DISCONTINUED
+}
+
+// ============================================================
+// REVIEW SYSTEM
+// ============================================================
+
+model Review {
+  id              String    @id @default(cuid())
+  rating          Int       // 1-5
+  title           String
+  content         String    @db.Text
+  pros            String[]
+  cons            String[]
+  images          String[]
+  videos          String[]
+  verified        Boolean   @default(false)
+  helpfulCount    Int       @default(0)
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  status          ReviewStatus @default(PENDING)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  votes           ReviewVote[]
+  responses       ReviewResponse[]
+
+  @@index([productId])
+  @@index([userId])
+  @@index([status])
+  @@index([rating])
+  @@map("reviews")
+}
+
+model ReviewVote {
+  id        String   @id @default(cuid())
+  helpful   Boolean  // true = helpful, false = not helpful
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([reviewId, userId])
+  @@index([reviewId])
+  @@map("review_votes")
+}
+
+model ReviewResponse {
+  id        String           @id @default(cuid())
+  content   String           @db.Text
+  reviewId  String
+  review    Review           @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+  userType  ResponseUserType // BRAND, EXPERT, USER
+  createdAt DateTime         @default(now())
+
+  @@index([reviewId])
+  @@map("review_responses")
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  FLAGGED
+}
+
+enum ResponseUserType {
+  USER
+  BRAND
+  EXPERT
+}
+
+// ============================================================
+// COMPARISON SYSTEM
+// ============================================================
+
+model Comparison {
+  id          String   @id @default(cuid())
+  title       String?
+  slug        String   @unique
+  productIds  String[] // Array of product IDs
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  isPublic    Boolean  @default(true)
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([slug])
+  @@map("comparisons")
+}
+
+// ============================================================
+// PRICE TRACKING
+// ============================================================
+
+model PriceHistory {
+  id          String   @id @default(cuid())
+  price       Decimal  @db.Decimal(10, 2)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  source      String   // Store name
+  url         String?
+  createdAt   DateTime @default(now())
+
+  @@index([productId, createdAt])
+  @@map("price_history")
+}
+
+model PriceAlert {
+  id          String   @id @default(cuid())
+  targetPrice Decimal  @db.Decimal(10, 2)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  active      Boolean  @default(true)
+  triggered   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([productId, userId])
+  @@index([active])
+  @@map("price_alerts")
+}
+
+// ============================================================
+// AFFILIATE SYSTEM
+// ============================================================
+
+model AffiliateLink {
+  id          String   @id @default(cuid())
+  url         String
+  provider    String   // Amazon, BestBuy, etc.
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  clicks      Int      @default(0)
+  conversions Int      @default(0)
+  revenue     Decimal  @db.Decimal(10, 2) @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productId])
+  @@index([active])
+  @@map("affiliate_links")
+}
+
+// ============================================================
+// WISHLIST
+// ============================================================
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@map("wishlists")
+}
+
+// ============================================================
+// CONTENT MANAGEMENT
+// ============================================================
+
+model Article {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  content     String      @db.Text
+  excerpt     String?
+  coverImage  String?
+  type        ArticleType // BUYING_GUIDE, REVIEW, HOW_TO
+  categoryId  String?
+  tags        String[]
+  authorId    String
+  published   Boolean     @default(false)
+  views       Int         @default(0)
+  seoTitle    String?
+  seoDescription String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  publishedAt DateTime?
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([published])
+  @@map("articles")
+}
+
+enum ArticleType {
+  BUYING_GUIDE
+  REVIEW
+  HOW_TO
+  NEWS
+  COMPARISON
+}
