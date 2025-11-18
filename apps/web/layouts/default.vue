@@ -42,10 +42,13 @@
               </svg>
             </button>
 
-            <!-- Sign In Button -->
-            <button class="btn btn-secondary hidden md:inline-flex">
+            <!-- Auth State -->
+            <div v-if="authStore.isAuthenticated" class="hidden md:block">
+              <LayoutUserDropdown />
+            </div>
+            <NuxtLink v-else to="/auth/login" class="btn btn-secondary hidden md:inline-flex">
               Sign In
-            </button>
+            </NuxtLink>
 
             <!-- Mobile Menu Button -->
             <button
@@ -93,9 +96,22 @@
               >
                 {{ item.name }}
               </NuxtLink>
-              <button class="btn btn-secondary mt-2">
+              <!-- Mobile Auth -->
+              <div v-if="authStore.isAuthenticated" class="mt-2 px-4 py-3 bg-primary-secondary rounded-md">
+                <p class="text-sm font-medium text-text-primary">{{ authStore.displayName }}</p>
+                <p class="text-xs text-text-secondary truncate">{{ authStore.user?.email }}</p>
+                <div class="flex gap-2 mt-3">
+                  <NuxtLink to="/profile" class="btn btn-secondary flex-1" @click="mobileMenuOpen = false">
+                    Profile
+                  </NuxtLink>
+                  <button @click="handleMobileLogout" class="btn btn-ghost flex-1">
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+              <NuxtLink v-else to="/auth/login" class="btn btn-secondary mt-2" @click="mobileMenuOpen = false">
                 Sign In
-              </button>
+              </NuxtLink>
             </div>
           </div>
         </Transition>
@@ -158,6 +174,9 @@
 
 <script setup lang="ts">
 const { isDark, toggleTheme } = useTheme()
+const authStore = useAuthStore()
+const router = useRouter()
+
 const mobileMenuOpen = ref(false)
 const globalSearch = ref<any>(null)
 
@@ -166,6 +185,12 @@ function openSearch() {
   setTimeout(() => {
     globalSearch.value?.open()
   }, 100)
+}
+
+async function handleMobileLogout() {
+  mobileMenuOpen.value = false
+  await authStore.logout()
+  router.push('/auth/login')
 }
 
 const navigation = [
