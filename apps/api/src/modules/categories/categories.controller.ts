@@ -1,9 +1,11 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('categories')
 @Controller('categories')
+@Public() // All category routes are public (read-only)
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 

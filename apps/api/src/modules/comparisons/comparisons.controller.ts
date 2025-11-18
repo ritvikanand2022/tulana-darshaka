@@ -10,10 +10,12 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { ComparisonsService } from './comparisons.service';
 import { CreateComparisonDto } from './dto/create-comparison.dto';
 import { UpdateComparisonDto } from './dto/update-comparison.dto';
+import { Public } from '../auth/decorators/public.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @ApiTags('comparisons')
 @Controller('comparisons')
@@ -21,13 +23,16 @@ export class ComparisonsController {
   constructor(private readonly comparisonsService: ComparisonsService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new comparison' })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a new comparison (requires authentication)' })
   @ApiResponse({ status: 201, description: 'Comparison created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  create(@Body() createComparisonDto: CreateComparisonDto) {
-    return this.comparisonsService.create(createComparisonDto);
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  create(@Body() createComparisonDto: CreateComparisonDto, @CurrentUser() user: any) {
+    return this.comparisonsService.create(createComparisonDto, user?.id);
   }
 
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Get all public comparisons' })
   @ApiResponse({ status: 200, description: 'Comparisons retrieved successfully' })
@@ -35,6 +40,7 @@ export class ComparisonsController {
     return this.comparisonsService.findAll();
   }
 
+  @Public()
   @Get('preview')
   @ApiOperation({ summary: 'Preview comparison without saving' })
   @ApiQuery({ name: 'productIds', description: 'Comma-separated product IDs', required: true })
@@ -44,6 +50,7 @@ export class ComparisonsController {
     return this.comparisonsService.getComparisonWithProducts(ids);
   }
 
+  @Public()
   @Get('slug/:slug')
   @ApiOperation({ summary: 'Get a comparison by slug' })
   @ApiResponse({ status: 200, description: 'Comparison found' })
@@ -52,6 +59,7 @@ export class ComparisonsController {
     return this.comparisonsService.findBySlug(slug);
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get a comparison by ID' })
   @ApiResponse({ status: 200, description: 'Comparison found' })
@@ -61,19 +69,25 @@ export class ComparisonsController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a comparison' })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a comparison (requires authentication)' })
   @ApiResponse({ status: 200, description: 'Comparison updated successfully' })
   @ApiResponse({ status: 404, description: 'Comparison not found' })
-  update(@Param('id') id: string, @Body() updateComparisonDto: UpdateComparisonDto) {
-    return this.comparisonsService.update(id, updateComparisonDto);
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  update(@Param('id') id: string, @Body() updateComparisonDto: UpdateComparisonDto, @CurrentUser() user: any) {
+    return this.comparisonsService.update(id, updateComparisonDto, user?.id);
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete a comparison' })
+  @ApiOperation({ summary: 'Delete a comparison (requires authentication)' })
   @ApiResponse({ status: 204, description: 'Comparison deleted successfully' })
   @ApiResponse({ status: 404, description: 'Comparison not found' })
-  remove(@Param('id') id: string) {
-    return this.comparisonsService.remove(id);
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  remove(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.comparisonsService.remove(id, user?.id);
   }
 }
