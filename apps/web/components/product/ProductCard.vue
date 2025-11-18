@@ -63,11 +63,17 @@
         </div>
 
         <button
-          class="btn btn-icon btn-ghost opacity-0 group-hover:opacity-100 transition-opacity"
-          @click.prevent="emit('compare', product)"
-          title="Add to compare"
+          class="btn btn-icon transition-opacity"
+          :class="[
+            isInComparison ? 'btn-primary opacity-100' : 'btn-ghost opacity-0 group-hover:opacity-100'
+          ]"
+          @click.prevent="handleCompareClick"
+          :title="isInComparison ? 'Remove from comparison' : 'Add to compare'"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg v-if="isInComparison" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
         </button>
@@ -77,6 +83,8 @@
 </template>
 
 <script setup lang="ts">
+import { useComparisonStore } from '~/stores/comparison'
+
 interface ProductImage {
   url: string
   alt?: string
@@ -103,6 +111,22 @@ const props = defineProps<{
 const emit = defineEmits<{
   compare: [product: Product]
 }>()
+
+const comparisonStore = useComparisonStore()
+
+const isInComparison = computed(() => {
+  return comparisonStore.isProductInComparison(props.product.id)
+})
+
+const handleCompareClick = () => {
+  const result = comparisonStore.toggleProduct(props.product)
+
+  if (!result.added && result.message) {
+    alert(result.message)
+  }
+
+  emit('compare', props.product)
+}
 
 const stockStatusLabel = computed(() => {
   switch (props.product.stockStatus) {

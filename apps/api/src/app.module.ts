@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { ComparisonsModule } from './modules/comparisons/comparisons.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -31,6 +32,7 @@ import configuration from './config/configuration';
     // Feature modules
     ProductsModule,
     CategoriesModule,
+    ComparisonsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

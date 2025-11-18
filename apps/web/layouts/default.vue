@@ -146,6 +146,9 @@
         </div>
       </div>
     </footer>
+
+    <!-- Comparison Bar (Fixed at bottom) -->
+    <ComparisonBar />
   </div>
 </template>
 
