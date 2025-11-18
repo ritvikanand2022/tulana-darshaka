@@ -8,6 +8,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { ComparisonsModule } from './modules/comparisons/comparisons.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { SearchModule } from './modules/search/search.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -35,6 +36,7 @@ import configuration from './config/configuration';
     CategoriesModule,
     ComparisonsModule,
     ReviewsModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

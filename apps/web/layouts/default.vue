@@ -23,16 +23,10 @@
 
           <!-- Right Actions -->
           <div class="flex items-center gap-3">
-            <!-- Search Button -->
-            <button
-              class="btn btn-ghost btn-icon hidden md:flex"
-              aria-label="Search"
-              title="Search (⌘K)"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
+            <!-- Global Search -->
+            <div class="hidden md:block">
+              <GlobalSearch ref="globalSearch" />
+            </div>
 
             <!-- Theme Toggle -->
             <button
@@ -80,6 +74,16 @@
         >
           <div v-if="mobileMenuOpen" class="md:hidden py-4 border-t border-divider">
             <div class="flex flex-col gap-2">
+              <!-- Mobile Search -->
+              <button
+                class="px-4 py-2 text-text-secondary hover:text-text-primary hover:bg-primary-secondary rounded-md transition-colors flex items-center gap-2"
+                @click="openSearch"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                Search
+              </button>
               <NuxtLink
                 v-for="item in navigation"
                 :key="item.name"
@@ -155,6 +159,14 @@
 <script setup lang="ts">
 const { isDark, toggleTheme } = useTheme()
 const mobileMenuOpen = ref(false)
+const globalSearch = ref<any>(null)
+
+function openSearch() {
+  mobileMenuOpen.value = false
+  setTimeout(() => {
+    globalSearch.value?.open()
+  }, 100)
+}
 
 const navigation = [
   { name: 'Products', href: '/products' },
