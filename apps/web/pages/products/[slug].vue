@@ -130,6 +130,173 @@
         </div>
       </div>
 
+      <!-- Reviews Section -->
+      <div class="mt-12">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-h2">Customer Reviews</h2>
+          <button
+            v-if="!showReviewForm"
+            class="btn btn-primary"
+            @click="showReviewForm = true"
+          >
+            Write a Review
+          </button>
+        </div>
+
+        <!-- Review Statistics -->
+        <div v-if="reviewStats" class="card p-6 mb-8">
+          <div class="grid md:grid-cols-2 gap-8">
+            <!-- Overall Rating -->
+            <div class="flex flex-col items-center justify-center">
+              <div class="text-6xl font-bold text-accent mb-2">
+                {{ reviewStats.averageRating.toFixed(1) }}
+              </div>
+              <div class="flex gap-1 mb-2">
+                <svg
+                  v-for="star in 5"
+                  :key="star"
+                  class="w-6 h-6"
+                  :class="star <= Math.round(reviewStats.averageRating) ? 'text-yellow-400' : 'text-border-primary'"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+              </div>
+              <div class="text-sm text-text-secondary">
+                Based on {{ reviewStats.totalReviews }} {{ reviewStats.totalReviews === 1 ? 'review' : 'reviews' }}
+              </div>
+            </div>
+
+            <!-- Rating Distribution -->
+            <div class="space-y-2">
+              <div v-for="rating in [5, 4, 3, 2, 1]" :key="rating" class="flex items-center gap-3">
+                <div class="flex items-center gap-1 w-16">
+                  <span class="text-sm font-medium">{{ rating }}</span>
+                  <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                </div>
+                <div class="flex-1 h-4 bg-primary-tertiary rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-accent transition-all"
+                    :style="{ width: `${getRatingPercentage(rating)}%` }"
+                  ></div>
+                </div>
+                <span class="text-sm text-text-secondary w-12 text-right">
+                  {{ reviewStats.ratingDistribution[rating] }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review Form -->
+        <div v-if="showReviewForm" class="mb-8">
+          <ReviewForm
+            :product-id="product!.id"
+            @submit="handleReviewSubmit"
+            @cancel="showReviewForm = false"
+          />
+        </div>
+
+        <!-- Filter and Sort Controls -->
+        <div class="flex flex-wrap items-center gap-4 mb-6">
+          <div class="flex items-center gap-2">
+            <label class="text-sm text-text-secondary">Sort by:</label>
+            <select
+              v-model="reviewSortBy"
+              class="form-select"
+              @change="loadReviews"
+            >
+              <option value="recent">Most Recent</option>
+              <option value="helpful">Most Helpful</option>
+              <option value="rating_high">Highest Rating</option>
+              <option value="rating_low">Lowest Rating</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <label class="text-sm text-text-secondary">Filter by:</label>
+            <select
+              v-model="reviewRatingFilter"
+              class="form-select"
+              @change="loadReviews"
+            >
+              <option :value="null">All Ratings</option>
+              <option :value="5">5 Stars</option>
+              <option :value="4">4 Stars</option>
+              <option :value="3">3 Stars</option>
+              <option :value="2">2 Stars</option>
+              <option :value="1">1 Star</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <input
+              id="verified-only"
+              v-model="reviewVerifiedOnly"
+              type="checkbox"
+              class="form-checkbox"
+              @change="loadReviews"
+            />
+            <label for="verified-only" class="text-sm text-text-secondary cursor-pointer">
+              Verified purchases only
+            </label>
+          </div>
+        </div>
+
+        <!-- Reviews List -->
+        <div v-if="reviews.length > 0" class="space-y-4 mb-8">
+          <ReviewCard
+            v-for="review in reviews"
+            :key="review.id"
+            :review="review"
+            @vote="handleVote"
+            @removeVote="handleRemoveVote"
+          />
+        </div>
+
+        <!-- No Reviews -->
+        <div v-else class="card p-8 text-center">
+          <svg class="w-16 h-16 mx-auto mb-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+          <h3 class="text-h4 mb-2">No reviews yet</h3>
+          <p class="text-text-secondary mb-4">Be the first to review this product!</p>
+          <button class="btn btn-primary" @click="showReviewForm = true">
+            Write a Review
+          </button>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="reviewPagination.totalPages > 1" class="flex justify-center gap-2">
+          <button
+            class="btn btn-ghost btn-sm"
+            :disabled="reviewPagination.page === 1"
+            @click="changePage(reviewPagination.page - 1)"
+          >
+            Previous
+          </button>
+          <button
+            v-for="page in paginationPages"
+            :key="page"
+            class="btn btn-sm"
+            :class="page === reviewPagination.page ? 'btn-primary' : 'btn-ghost'"
+            @click="changePage(page)"
+          >
+            {{ page }}
+          </button>
+          <button
+            class="btn btn-ghost btn-sm"
+            :disabled="reviewPagination.page === reviewPagination.totalPages"
+            @click="changePage(reviewPagination.page + 1)"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
       <!-- Similar Products -->
       <div class="mt-12">
         <h2 class="text-h2 mb-6">Similar Products</h2>
@@ -161,6 +328,141 @@ const { data: product } = await useFetch(
     watch: [slug],
   }
 )
+
+// Reviews state
+const reviews = ref<any[]>([])
+const reviewStats = ref<any>(null)
+const showReviewForm = ref(false)
+const reviewSortBy = ref('recent')
+const reviewRatingFilter = ref<number | null>(null)
+const reviewVerifiedOnly = ref(false)
+const reviewPagination = ref({
+  page: 1,
+  pageSize: 10,
+  total: 0,
+  totalPages: 0,
+})
+
+// Load review statistics
+async function loadReviewStats() {
+  if (!product.value?.id) return
+
+  try {
+    const data = await $fetch(`${config.public.apiUrl}/api/reviews/product/${product.value.id}/stats`)
+    reviewStats.value = data
+  } catch (error) {
+    console.error('Failed to load review stats:', error)
+  }
+}
+
+// Load reviews
+async function loadReviews() {
+  if (!product.value?.id) return
+
+  try {
+    const params = new URLSearchParams({
+      productId: product.value.id,
+      page: String(reviewPagination.value.page),
+      pageSize: String(reviewPagination.value.pageSize),
+      sortBy: reviewSortBy.value,
+    })
+
+    if (reviewRatingFilter.value) {
+      params.append('rating', String(reviewRatingFilter.value))
+    }
+
+    if (reviewVerifiedOnly.value) {
+      params.append('verified', 'true')
+    }
+
+    const data = await $fetch(`${config.public.apiUrl}/api/reviews?${params.toString()}`)
+
+    reviews.value = data.reviews
+    reviewPagination.value = {
+      page: data.page,
+      pageSize: data.pageSize,
+      total: data.total,
+      totalPages: data.totalPages,
+    }
+  } catch (error) {
+    console.error('Failed to load reviews:', error)
+  }
+}
+
+// Handle review submit
+async function handleReviewSubmit(review: any) {
+  showReviewForm.value = false
+  // Reload reviews and stats
+  await Promise.all([loadReviews(), loadReviewStats()])
+}
+
+// Handle vote
+async function handleVote(reviewId: string, helpful: boolean) {
+  // Optimistically update the UI
+  await loadReviews()
+}
+
+// Handle remove vote
+async function handleRemoveVote(reviewId: string) {
+  // Optimistically update the UI
+  await loadReviews()
+}
+
+// Change page
+function changePage(page: number) {
+  reviewPagination.value.page = page
+  loadReviews()
+  // Scroll to reviews section
+  const reviewsSection = document.querySelector('.mt-12')
+  reviewsSection?.scrollIntoView({ behavior: 'smooth' })
+}
+
+// Calculate pagination pages to display
+const paginationPages = computed(() => {
+  const { page, totalPages } = reviewPagination.value
+  const pages: number[] = []
+  const maxPages = 5
+
+  if (totalPages <= maxPages) {
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i)
+    }
+  } else {
+    if (page <= 3) {
+      for (let i = 1; i <= 4; i++) {
+        pages.push(i)
+      }
+      pages.push(totalPages)
+    } else if (page >= totalPages - 2) {
+      pages.push(1)
+      for (let i = totalPages - 3; i <= totalPages; i++) {
+        pages.push(i)
+      }
+    } else {
+      pages.push(1)
+      pages.push(page - 1)
+      pages.push(page)
+      pages.push(page + 1)
+      pages.push(totalPages)
+    }
+  }
+
+  return pages
+})
+
+// Calculate rating percentage for distribution
+function getRatingPercentage(rating: number): number {
+  if (!reviewStats.value || reviewStats.value.totalReviews === 0) return 0
+  return (reviewStats.value.ratingDistribution[rating] / reviewStats.value.totalReviews) * 100
+}
+
+// Load initial reviews data
+onMounted(() => {
+  if (product.value?.id) {
+    loadReviewStats()
+    loadReviews()
+  }
+})
 
 // Image gallery
 const selectedImageIndex = ref(0)
@@ -255,3 +557,34 @@ useHead({
   ],
 })
 </script>
+
+<style scoped>
+.form-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.form-select:hover {
+  border-color: var(--border-secondary);
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.form-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  accent-color: var(--accent-primary);
+}
+</style>
