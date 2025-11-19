@@ -12,18 +12,21 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Tulana Darshaka - Smart Product Comparisons',
+      title: 'Comparo - Smart Product Comparisons',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         {
           name: 'description',
-          content: 'Compare products side-by-side and make informed purchasing decisions'
+          content: 'Compare products side-by-side and make informed purchasing decisions with Comparo'
         },
         { name: 'theme-color', content: '#2383e2' },
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'

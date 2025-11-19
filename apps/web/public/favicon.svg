@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2383e2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a6cbf;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="url(#grad)"/>
+
+  <!-- Comparison symbol: Two brackets facing each other -->
+  <g fill="white">
+    <!-- Left bracket -->
+    <path d="M 35 30 Q 25 30 25 40 L 25 60 Q 25 70 35 70"
+          stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+    <!-- Right bracket -->
+    <path d="M 65 30 Q 75 30 75 40 L 75 60 Q 75 70 65 70"
+          stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+    <!-- Center dots for comparison -->
+    <circle cx="42" cy="45" r="2.5" fill="white"/>
+    <circle cx="42" cy="55" r="2.5" fill="white"/>
+    <circle cx="58" cy="45" r="2.5" fill="white"/>
+    <circle cx="58" cy="55" r="2.5" fill="white"/>
+  </g>
+</svg>

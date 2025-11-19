@@ -79,17 +79,24 @@
               </svg>
               View Deals
             </button>
-            <button class="btn btn-secondary">
+            <button
+              class="btn btn-secondary"
+              @click="handleAddToCompare"
+            >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
               Add to Compare
             </button>
-            <button class="btn btn-ghost btn-icon">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            </button>
+            <ProductWishlistButton
+              v-if="product?.id"
+              :product-id="product.id"
+              :product-name="product.name || ''"
+              :product-brand="product.brand || ''"
+              :current-price="product.price || 0"
+              :image-url="product.images?.[0]?.url || null"
+              :slug="product.slug || ''"
+            />
           </div>
 
           <!-- Quick Specs -->
@@ -337,14 +344,43 @@ definePageMeta({
 })
 
 const route = useRoute()
+const router = useRouter()
 const config = useRuntimeConfig()
 const authStore = useAuthStore()
+const comparisonStore = useComparisonStore()
 
 const slug = computed(() => {
   const params = route.params as { slug?: string | string[] }
   const slugParam = params.slug
   return typeof slugParam === 'string' ? slugParam : Array.isArray(slugParam) ? slugParam[0] : ''
 })
+
+// Handle add to compare
+const handleAddToCompare = () => {
+  if (!product.value) return
+
+  const result = comparisonStore.toggleProduct({
+    id: product.value.id || '',
+    name: product.value.name || '',
+    brand: product.value.brand || '',
+    slug: product.value.slug || '',
+    price: product.value.price || 0,
+    stockStatus: product.value.stockStatus || 'IN_STOCK',
+    images: product.value.images,
+    specifications: product.value.specifications,
+    category: product.value.category,
+  })
+
+  if (result.added) {
+    // Navigate to compare page if they want to
+    const shouldNavigate = confirm('Product added to comparison. Would you like to go to the comparison page?')
+    if (shouldNavigate) {
+      router.push('/compare')
+    }
+  } else if (result.message) {
+    alert(result.message)
+  }
+}
 
 // Fetch product
 const { data: product } = await useFetch<Product>(

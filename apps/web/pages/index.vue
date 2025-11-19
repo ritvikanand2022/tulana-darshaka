@@ -251,19 +251,19 @@ const stats = computed(() => [
 
 // SEO
 useHead({
-  title: 'Tulana Darshaka - Smart Product Comparisons & Reviews',
+  title: 'Comparo - Smart Product Comparisons & Reviews',
   meta: [
     {
       name: 'description',
-      content: 'Compare products side-by-side with intelligent highlighting, price tracking, expert reviews, and community insights. Make smarter purchasing decisions.'
+      content: 'Compare products side-by-side with intelligent highlighting, price tracking, expert reviews, and community insights. Make smarter purchasing decisions with Comparo.'
     },
     {
       name: 'keywords',
-      content: 'product comparison, price tracking, product reviews, smart shopping, compare products'
+      content: 'product comparison, price tracking, product reviews, smart shopping, compare products, comparo'
     },
     {
       property: 'og:title',
-      content: 'Tulana Darshaka - Smart Product Comparisons'
+      content: 'Comparo - Smart Product Comparisons'
     },
     {
       property: 'og:description',
@@ -279,7 +279,7 @@ useHead({
     },
     {
       name: 'twitter:title',
-      content: 'Tulana Darshaka - Smart Product Comparisons'
+      content: 'Comparo - Smart Product Comparisons'
     },
     {
       name: 'twitter:description',

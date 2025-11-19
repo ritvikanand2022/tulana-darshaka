@@ -5,8 +5,27 @@
       <nav class="container-custom">
         <div class="flex items-center justify-between h-16">
           <!-- Logo -->
-          <NuxtLink to="/" class="flex items-center gap-2">
-            <div class="text-2xl font-bold text-accent">Tulana</div>
+          <NuxtLink to="/" class="flex items-center gap-2 group">
+            <svg class="w-8 h-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#2383e2;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#1a6cbf;stop-opacity:1" />
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="50" r="48" fill="url(#logoGrad)"/>
+              <g fill="white">
+                <path d="M 35 30 Q 25 30 25 40 L 25 60 Q 25 70 35 70"
+                      stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+                <path d="M 65 30 Q 75 30 75 40 L 75 60 Q 75 70 65 70"
+                      stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+                <circle cx="42" cy="45" r="2.5" fill="white"/>
+                <circle cx="42" cy="55" r="2.5" fill="white"/>
+                <circle cx="58" cy="45" r="2.5" fill="white"/>
+                <circle cx="58" cy="55" r="2.5" fill="white"/>
+              </g>
+            </svg>
+            <div class="text-2xl font-bold text-text-primary group-hover:text-accent transition-colors">Comparo</div>
           </NuxtLink>
 
           <!-- Desktop Navigation -->
@@ -129,7 +148,7 @@
         <div class="grid md:grid-cols-4 gap-8">
           <!-- Brand -->
           <div class="md:col-span-1">
-            <div class="text-xl font-bold text-accent mb-3">Tulana Darshaka</div>
+            <div class="text-xl font-bold text-accent mb-3">Comparo</div>
             <p class="text-sm text-text-secondary">
               Smart product comparisons to help you make informed purchasing decisions.
             </p>
@@ -150,7 +169,7 @@
 
         <div class="mt-8 pt-8 border-t border-divider flex flex-col md:flex-row justify-between items-center gap-4">
           <p class="text-sm text-text-secondary">
-            © {{ new Date().getFullYear() }} Tulana Darshaka. All rights reserved.
+            © {{ new Date().getFullYear() }} Comparo. All rights reserved.
           </p>
           <div class="flex gap-4">
             <a href="#" class="text-text-secondary hover:text-text-primary transition-colors">
@@ -198,6 +217,7 @@ const navigation = [
   { name: 'Categories', href: '/categories' },
   { name: 'Comparisons', href: '/comparisons' },
   { name: 'Reviews', href: '/reviews' },
+  { name: 'Wishlist', href: '/wishlist' },
 ]
 
 const footerSections = [

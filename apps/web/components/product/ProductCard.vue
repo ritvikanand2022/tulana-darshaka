@@ -62,21 +62,49 @@
           </div>
         </div>
 
-        <button
-          class="btn btn-icon transition-opacity"
-          :class="[
-            isInComparison ? 'btn-primary opacity-100' : 'btn-ghost opacity-0 group-hover:opacity-100'
-          ]"
-          @click.prevent="handleCompareClick"
-          :title="isInComparison ? 'Remove from comparison' : 'Add to compare'"
-        >
-          <svg v-if="isInComparison" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-          <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-        </button>
+        <div class="flex gap-1">
+          <!-- Wishlist Button -->
+          <button
+            class="btn btn-icon transition-all"
+            :class="[
+              isInWishlist ? 'opacity-100 text-error' : 'btn-ghost opacity-0 group-hover:opacity-100'
+            ]"
+            @click.prevent="handleWishlistClick"
+            :title="isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'"
+          >
+            <svg
+              class="w-5 h-5 transition-all"
+              :class="{ 'fill-error': isInWishlist }"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+          </button>
+
+          <!-- Compare Button -->
+          <button
+            class="btn btn-icon transition-opacity"
+            :class="[
+              isInComparison ? 'btn-primary opacity-100' : 'btn-ghost opacity-0 group-hover:opacity-100'
+            ]"
+            @click.prevent="handleCompareClick"
+            :title="isInComparison ? 'Remove from comparison' : 'Add to compare'"
+          >
+            <svg v-if="isInComparison" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </NuxtLink>
@@ -84,6 +112,7 @@
 
 <script setup lang="ts">
 import { useComparisonStore } from '~/stores/comparison'
+import { useWishlistStore } from '~/stores/wishlist'
 
 interface ProductImage {
   url: string
@@ -113,9 +142,19 @@ const emit = defineEmits<{
 }>()
 
 const comparisonStore = useComparisonStore()
+const wishlistStore = useWishlistStore()
+
+// Load wishlist from localStorage on mount
+onMounted(() => {
+  wishlistStore.loadFromLocalStorage()
+})
 
 const isInComparison = computed(() => {
   return comparisonStore.isProductInComparison(props.product.id)
+})
+
+const isInWishlist = computed(() => {
+  return wishlistStore.isInWishlist(props.product.id)
 })
 
 const handleCompareClick = () => {
@@ -126,6 +165,17 @@ const handleCompareClick = () => {
   }
 
   emit('compare', props.product)
+}
+
+const handleWishlistClick = () => {
+  wishlistStore.toggleWishlist({
+    id: props.product.id,
+    name: props.product.name,
+    brand: props.product.brand,
+    currentPrice: props.product.price,
+    imageUrl: props.product.images?.[0]?.url || null,
+    slug: props.product.slug,
+  })
 }
 
 const stockStatusLabel = computed(() => {
