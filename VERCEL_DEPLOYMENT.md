@@ -26,56 +26,88 @@ tulana-darshaka/
 
 ## 🔧 Critical Fixes Applied
 
-### Problem: vite-plugin-checker Build Failures
+### Problem 1: NPM Workspace Module Resolution
 
-**Root Cause**: Nuxt's TypeScript type checking was causing builds to fail on Vercel due to:
+**Root Cause**: npm workspaces hoist dependencies to root causing ESM module resolution failures:
+1. Vercel builds failed with "Cannot find package 'vite'" errors
+2. `@nuxt/devtools` and other packages couldn't resolve their dependencies
+3. ESM (ECMAScript modules) resolution doesn't work correctly with hoisted monorepo structure
+4. Lifecycle scripts (postinstall/prepare) ran before dependencies were fully resolved
+
+**Solution**: Use `--no-workspaces` flag to install dependencies locally in `apps/web`:
+
+### Problem 2: TypeScript Type Checking
+
+**Root Cause**: Nuxt's TypeScript type checking was causing additional build overhead:
 1. Memory constraints on Vercel's build environment
 2. Type checking taking too long
-3. `vite-plugin-checker` plugin conflicts
+3. `vite-plugin-checker` plugin conflicts (now removed)
 
 **Solution**: Complete TypeScript build-time checking disabled.
 
 ### Files Modified
 
-**1. `apps/web/nuxt.config.ts`** - Disabled all TS checking:
-```typescript
-typescript: {
-  strict: false,      // No strict mode during build
-  typeCheck: false,   // No type checking during build
-  shim: false,        // No shim generation
-},
-
-experimental: {
-  typedPages: false,  // Disabled experimental features
-},
-```
-
-**2. `apps/web/vercel.json`** - Optimized build config:
+**1. `apps/web/vercel.json`** - CRITICAL monorepo fix:
 ```json
 {
   "buildCommand": "npm run build",
   "outputDirectory": ".output/public",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "npm install --legacy-peer-deps --no-workspaces",  // ← KEY FIX
   "framework": "nuxtjs",
   "build": {
     "env": {
       "NODE_VERSION": "20",
       "NPM_FLAGS": "--legacy-peer-deps",
-      "NITRO_PRESET": "node-server"
+      "NITRO_PRESET": "node-server",
+      "CI": "true"
     }
   }
 }
 ```
 
-**3. `apps/web/.npmrc`** - Consistent npm behavior:
+**The `--no-workspaces` flag is CRITICAL**: It forces npm to install dependencies directly in `apps/web/node_modules` instead of using workspace hoisting. This resolves ESM module resolution issues in the monorepo.
+
+**2. `apps/web/package.json`** - Cleaned up for production:
+```json
+{
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    // Removed: postinstall, prepare scripts (caused premature execution)
+  },
+  "devDependencies": {
+    // Removed: @nuxt/devtools (dev-only, caused vite resolution issues)
+    "vite": "^5.0.0"  // ← Added explicit vite dependency
+  }
+}
+```
+
+**3. `apps/web/nuxt.config.ts`** - Disabled TS checking and devtools:
+```typescript
+export default defineNuxtConfig({
+  devtools: { enabled: process.env.NODE_ENV === 'development' }, // Only in dev
+
+  typescript: {
+    strict: false,      // No strict mode during build
+    typeCheck: false,   // No type checking during build
+    shim: false,        // No shim generation
+  },
+
+  experimental: {
+    typedPages: false,  // Disabled experimental features
+  },
+})
+```
+
+**4. `apps/web/.npmrc`** - Consistent npm behavior:
 ```
 legacy-peer-deps=true
 engine-strict=false
 ```
 
-**4. `apps/web/.vercelignore`** - Exclude unnecessary files
+**5. `apps/web/.vercelignore`** - Exclude unnecessary files
 
-**5. `turbo.json`** - Added Nuxt output paths:
+**6. `turbo.json`** - Added Nuxt output paths:
 ```json
 "outputs": [".next/**", "!.next/cache/**", ".output/**", "dist/**"]
 ```
@@ -226,6 +258,27 @@ npm run build
 
 ## 🐛 Troubleshooting
 
+### Error: "Cannot find package 'vite'" during Vercel build
+
+**Status**: ✅ **FIXED** - This error should no longer occur
+
+**Symptoms**:
+```
+npm error [error] Cannot find package 'vite' imported from /vercel/path0/node_modules/@nuxt/devtools/dist/chunks/module-main.mjs
+```
+
+**Root Cause**: npm workspace hoisting in monorepo causing ESM resolution failures
+
+**Solution** (Already Applied):
+1. Verify `apps/web/vercel.json` has `installCommand: "npm install --legacy-peer-deps --no-workspaces"`
+2. Verify `@nuxt/devtools` is removed from `apps/web/package.json`
+3. The `--no-workspaces` flag forces local installation avoiding hoisting issues
+
+**If you still see this**:
+1. Clear Vercel build cache (Settings → Build & Development Settings)
+2. Redeploy
+3. Verify Root Directory is set to `apps/web` in Vercel dashboard
+
 ### Error: "vite-plugin-checker failed"
 
 **Status**: ✅ **FIXED** - This error should no longer occur
@@ -233,7 +286,7 @@ npm run build
 **If you still see this**:
 1. Verify `nuxt.config.ts` has `typeCheck: false`
 2. Check `experimental.typedPages: false`
-3. Run `rm -rf .nuxt node_modules && npm install`
+3. Clear caches and rebuild
 
 ### Error: "Module not found" or "Cannot find module"
 
