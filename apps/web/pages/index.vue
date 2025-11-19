@@ -38,7 +38,7 @@
     </section>
 
     <!-- Featured Products -->
-    <section v-if="featuredProducts.length > 0" class="container-custom py-16">
+    <section v-if="featuredProducts && featuredProducts.length > 0" class="container-custom py-16">
       <div class="flex items-center justify-between mb-8">
         <h2 class="text-h2">Featured Products</h2>
         <NuxtLink to="/products" class="text-accent hover:underline">
@@ -55,7 +55,7 @@
     </section>
 
     <!-- Popular Categories -->
-    <section v-if="categories.length > 0" class="container-custom py-16">
+    <section v-if="categories && categories.length > 0" class="container-custom py-16">
       <h2 class="text-h2 mb-8">Browse by Category</h2>
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         <NuxtLink
@@ -132,7 +132,8 @@ const features = [
 const { data: featuredProducts } = await useFetch(
   `${config.public.apiUrl}/api/products?page=1&pageSize=4`,
   {
-    transform: (data: any) => data.products || []
+    transform: (data: any) => data.products || [],
+    default: () => []
   }
 )
 
@@ -140,7 +141,8 @@ const { data: featuredProducts } = await useFetch(
 const { data: categories } = await useFetch(
   `${config.public.apiUrl}/api/categories?page=1&pageSize=8`,
   {
-    transform: (data: any) => data.categories || []
+    transform: (data: any) => data.categories || [],
+    default: () => []
   }
 )
 
