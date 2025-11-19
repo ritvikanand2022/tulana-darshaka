@@ -17,10 +17,10 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     }
   }
 
-  // If still not authenticated, redirect to login
+  // If still not authenticated, redirect to signup
   if (!authStore.isAuthenticated) {
     return navigateTo({
-      path: '/auth/login',
+      path: '/auth/register',
       query: { redirect: to.fullPath },
     })
   }
