@@ -1,8 +1,26 @@
-# Vercel Deployment Guide - Tulana Darshaka
+# Vercel Frontend Deployment - Tulana Darshaka
+
+**Frontend Deployment from Monorepo to Vercel**
+
+> **📚 For complete deployment guide** (frontend + backend + database), see [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 ## ✅ All Build Errors Fixed
 
-This guide contains the **verified, working configuration** for deploying to Vercel.
+This guide contains the **verified, working configuration** for deploying the Nuxt 3 frontend (`apps/web`) to Vercel from our monorepo.
+
+## 🏗️ Monorepo Context
+
+This project uses a Turborepo monorepo structure:
+```
+tulana-darshaka/
+├── apps/
+│   ├── web/          ← Nuxt 3 Frontend (this deploys to Vercel)
+│   └── api/          ← NestJS Backend (deploy to Render/Railway - see DEPLOYMENT.md)
+└── packages/
+    └── shared/       ← Shared code
+```
+
+**This guide focuses only on deploying `apps/web` to Vercel**. For backend deployment, database setup, and full-stack deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 ---
 
@@ -85,10 +103,15 @@ engine-strict=false
    Add these in Vercel Dashboard → Settings → Environment Variables:
 
    ```bash
-   # Required
-   NUXT_PUBLIC_API_URL=https://your-api-url.com
+   # Required - Your Backend API URL
+   # Deploy backend first! See DEPLOYMENT.md for backend deployment to Render/Railway
+   NUXT_PUBLIC_API_URL=https://your-api.onrender.com
+
+   # Frontend URL (Vercel will assign this, update after first deploy)
    NUXT_PUBLIC_SITE_URL=https://your-app.vercel.app
    ```
+
+   **⚠️ Important**: Deploy your backend API first (see [DEPLOYMENT.md](./DEPLOYMENT.md#backend-deployment-api)), then use that URL for `NUXT_PUBLIC_API_URL`.
 
    Set for: ✅ Production ✅ Preview ✅ Development
 
@@ -128,12 +151,26 @@ vercel --prod
 ### Required Variables
 
 ```bash
-# Backend API URL (deploy your API first!)
-NUXT_PUBLIC_API_URL=https://your-api.railway.app
+# Backend API URL (deploy your backend first!)
+# Examples based on hosting platform:
+# - Render: https://tulana-darshaka-api.onrender.com
+# - Railway: https://tulana-darshaka-api.up.railway.app
+# - Fly.io: https://tulana-darshaka-api.fly.dev
+NUXT_PUBLIC_API_URL=https://your-api.onrender.com
 
-# Frontend URL (Vercel will auto-assign)
+# Frontend URL (Vercel will auto-assign this)
+# Update after first deployment with actual URL
 NUXT_PUBLIC_SITE_URL=https://your-app.vercel.app
 ```
+
+### Deployment Order
+
+**⚠️ IMPORTANT**: Deploy services in this order:
+1. **Database** - Set up PostgreSQL first (Render/Supabase/Neon)
+2. **Backend API** - Deploy NestJS API (needs database URL)
+3. **Frontend** - Deploy Nuxt app (needs backend API URL)
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete multi-service deployment guide.
 
 ### How to Set
 
@@ -235,18 +272,30 @@ npm run build
 
 ### CORS Errors
 
-**Backend Fix** (in your API):
-```typescript
-// Add Vercel URL to CORS origins
-app.enableCors({
-  origin: [
-    'http://localhost:3000',
-    'https://your-app.vercel.app',
-    'https://your-app-*.vercel.app', // Preview deployments
-  ],
-  credentials: true,
-});
+**Symptoms**: Browser console shows "CORS policy blocked" errors
+
+**Backend Configuration Required**:
+
+The backend API (`apps/api/src/main.ts`) reads CORS origins from environment variables.
+
+**In your backend deployment** (Render/Railway/etc.), set:
+```bash
+# Environment Variable in Backend Service
+CORS_ORIGIN=http://localhost:3000,https://your-app.vercel.app,https://your-app-*.vercel.app
 ```
+
+This allows:
+- Local development (`localhost:3000`)
+- Production Vercel deployment
+- All Vercel preview deployments (important for PR testing)
+
+**If you need to update CORS after deployment**:
+1. Go to your backend hosting dashboard (e.g., Render)
+2. Environment → Edit `CORS_ORIGIN`
+3. Add your Vercel URLs (comma-separated)
+4. Save (will auto-redeploy backend)
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md#2-configure-cors-properly) for detailed CORS configuration.
 
 ---
 
@@ -508,21 +557,45 @@ VERCEL_ENV=development
 **Last Updated**: 2025-11-19
 **Build Status**: ✅ VERIFIED WORKING
 **Local Build**: ✅ SUCCESS (2.33 MB, 570 KB gzipped)
-**Deployment Status**: ✅ READY FOR PRODUCTION
+**Frontend Deployment**: ✅ READY FOR VERCEL
 
-**All build errors have been resolved. The application is ready for Vercel deployment.**
+**All build errors have been resolved. The frontend is ready for Vercel deployment.**
+
+**Note**: This is part of a monorepo. Backend API needs separate deployment. See [DEPLOYMENT.md](./DEPLOYMENT.md) for full-stack deployment.
 
 ---
 
-## 🎯 Quick Start Command
+## 🎯 Quick Start Commands
+
+### Frontend Only (Vercel)
 
 ```bash
-# Deploy now
+# Deploy via Vercel CLI
 cd apps/web
 vercel --prod
 
-# Or via GitHub
+# Or via GitHub (after connecting repository)
 git push origin main
 ```
 
 **Expected Result**: ✅ Build succeeds in ~60 seconds, site is live!
+
+### Full Stack Deployment
+
+**For complete deployment** including backend API and database, see:
+
+📚 **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Complete deployment guide with:
+- Database setup (PostgreSQL)
+- Backend API deployment (Render/Railway/Fly.io)
+- Frontend deployment (Vercel)
+- Environment variable configuration
+- CORS setup
+- Post-deployment checklist
+
+### Recommended Deployment Order
+
+1. **Setup Database** → PostgreSQL on Render/Supabase/Neon
+2. **Deploy Backend** → NestJS API to Render/Railway
+3. **Deploy Frontend** → Nuxt app to Vercel (this guide)
+4. **Configure CORS** → Update backend with Vercel URL
+5. **Test Integration** → Verify frontend ↔ backend communication
