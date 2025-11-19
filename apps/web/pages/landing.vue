@@ -1,5 +1,40 @@
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen bg-primary-primary">
+    <!-- Minimal Header -->
+    <header class="sticky top-0 z-50 backdrop-blur-lg bg-primary-primary/80 border-b border-primary-secondary">
+      <div class="container-custom">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <NuxtLink to="/" class="flex items-center gap-2">
+            <img src="/favicon.svg" alt="Comparo" class="h-8 w-8" />
+            <span class="text-xl font-bold text-text-primary">Comparo</span>
+          </NuxtLink>
+
+          <!-- Right Side: Theme + Sign In -->
+          <div class="flex items-center gap-4">
+            <!-- Theme Changer -->
+            <button
+              @click="toggleTheme"
+              class="p-2 rounded-lg hover:bg-primary-secondary transition-colors"
+              :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+            >
+              <svg v-if="isDark" class="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <svg v-else class="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
+
+            <!-- Sign In Button -->
+            <NuxtLink to="/auth/login" class="btn btn-primary">
+              Sign In
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+    </header>
+
     <!-- Hero Section -->
     <section class="relative overflow-hidden bg-gradient-to-br from-primary-primary via-primary-secondary to-primary-tertiary">
       <!-- Animated Background Pattern -->
@@ -41,9 +76,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </NuxtLink>
-              <NuxtLink to="/home" class="btn btn-secondary btn-lg">
-                Explore Products
-              </NuxtLink>
+              <a href="#features" class="btn btn-secondary btn-lg">
+                Learn More
+              </a>
             </div>
 
             <!-- Social Proof -->
@@ -92,7 +127,7 @@
     </section>
 
     <!-- Features Section -->
-    <section class="py-20 bg-primary-secondary">
+    <section id="features" class="py-20 bg-primary-secondary">
       <div class="container-custom">
         <div class="text-center mb-16">
           <h2 class="text-4xl md:text-5xl font-bold text-text-primary mb-4">
@@ -238,8 +273,8 @@
           <NuxtLink to="/auth/register" class="btn bg-white text-accent hover:bg-gray-100 btn-lg">
             Create Free Account
           </NuxtLink>
-          <NuxtLink to="/home" class="btn bg-transparent border-2 border-white text-white hover:bg-white/10 btn-lg">
-            Browse Without Signing Up
+          <NuxtLink to="/auth/login" class="btn bg-transparent border-2 border-white text-white hover:bg-white/10 btn-lg">
+            Already Have an Account? Sign In
           </NuxtLink>
         </div>
       </div>
@@ -249,8 +284,27 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'default',
+  layout: false,
 })
+
+// Theme management
+const isDark = ref(false)
+
+onMounted(() => {
+  // Check current theme
+  isDark.value = document.documentElement.classList.contains('dark')
+})
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value
+  if (isDark.value) {
+    document.documentElement.classList.add('dark')
+    localStorage.setItem('theme', 'dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+    localStorage.setItem('theme', 'light')
+  }
+}
 
 // SEO
 useHead({
