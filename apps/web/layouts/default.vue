@@ -213,6 +213,7 @@ async function handleMobileLogout() {
 }
 
 const navigation = [
+  { name: 'Home', href: '/home' },
   { name: 'Products', href: '/products' },
   { name: 'Categories', href: '/categories' },
   { name: 'Comparisons', href: '/comparisons' },
