@@ -1,0 +1,29 @@
+# Nuxt dev/build outputs
+.nuxt
+.output
+node_modules
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode
+.idea
+*.sublime-*
+*.swp
+*.swo
+*~
+
+# Testing
+coverage
+.nyc_output
+
+# Misc
+.cache

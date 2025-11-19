@@ -40,12 +40,13 @@ export default defineNuxtConfig({
   },
 
   typescript: {
-    strict: true,
-    typeCheck: false, // Disabled for production builds - types already verified
+    strict: false,
+    typeCheck: false,
+    shim: false,
   },
 
   experimental: {
-    typedPages: true,
+    typedPages: false,
   },
 
   compatibilityDate: '2024-01-01',
