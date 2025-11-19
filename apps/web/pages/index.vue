@@ -1,48 +1,114 @@
 <template>
   <div class="min-h-screen">
     <!-- Hero Section -->
-    <section class="container-custom py-20">
-      <div class="text-center max-w-4xl mx-auto">
-        <h1 class="text-display mb-6 animate-slide-up">
-          Compare Products.
-          <span class="text-accent">Make Smart Choices.</span>
-        </h1>
-        <p class="text-xl text-text-secondary mb-8 animate-slide-up" style="animation-delay: 100ms">
-          Side-by-side product comparisons with price tracking, expert reviews, and community insights.
-        </p>
-        <div class="flex gap-4 justify-center animate-slide-up" style="animation-delay: 200ms">
-          <NuxtLink to="/comparisons" class="btn btn-primary">
-            Start Comparing
-          </NuxtLink>
-          <NuxtLink to="/products" class="btn btn-secondary">
-            Browse Products
-          </NuxtLink>
+    <section class="relative overflow-hidden">
+      <!-- Background gradient -->
+      <div class="absolute inset-0 -z-10">
+        <div class="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/10 dark:from-accent/10 dark:to-accent/5" />
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(35,131,226,0.1),transparent_50%)]" />
+      </div>
+
+      <div class="container-custom pt-24 pb-32 md:pt-32 md:pb-40">
+        <div class="max-w-5xl mx-auto text-center">
+          <!-- Badge -->
+          <div class="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-primary border border-border text-sm text-text-secondary animate-slide-up">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+            </span>
+            Now in Beta
+          </div>
+
+          <!-- Heading -->
+          <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight animate-slide-up" style="animation-delay: 50ms">
+            Compare Products.
+            <br />
+            <span class="bg-gradient-to-r from-accent via-accent-dark to-accent bg-clip-text text-transparent">
+              Make Informed Decisions.
+            </span>
+          </h1>
+
+          <!-- Subheading -->
+          <p class="text-lg md:text-xl text-text-secondary mb-10 max-w-3xl mx-auto leading-relaxed animate-slide-up" style="animation-delay: 100ms">
+            Side-by-side comparisons with real-time price tracking, expert reviews, and community insights.
+            Everything you need to make confident purchasing decisions.
+          </p>
+
+          <!-- CTA Buttons -->
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up" style="animation-delay: 150ms">
+            <NuxtLink to="/products" class="btn-hero btn-hero-primary group">
+              <span>Get Started</span>
+              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </NuxtLink>
+            <NuxtLink to="/comparisons" class="btn-hero btn-hero-secondary">
+              View Comparisons
+            </NuxtLink>
+          </div>
+
+          <!-- Social Proof -->
+          <div class="mt-16 flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-text-tertiary animate-slide-up" style="animation-delay: 200ms">
+            <div class="flex items-center gap-2">
+              <div class="flex -space-x-2">
+                <div class="w-8 h-8 rounded-full bg-accent/20 border-2 border-primary" />
+                <div class="w-8 h-8 rounded-full bg-accent/30 border-2 border-primary" />
+                <div class="w-8 h-8 rounded-full bg-accent/40 border-2 border-primary" />
+              </div>
+              <span>Trusted by shoppers</span>
+            </div>
+            <div class="hidden sm:block text-text-tertiary">•</div>
+            <div>100+ Products compared daily</div>
+            <div class="hidden sm:block text-text-tertiary">•</div>
+            <div>Save up to 30% on purchases</div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Features Section -->
-    <section class="container-custom py-16">
-      <div class="grid md:grid-cols-3 gap-8">
+    <section class="container-custom py-20 md:py-32">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-5xl font-bold mb-4">
+          Everything you need to compare
+        </h2>
+        <p class="text-lg text-text-secondary max-w-2xl mx-auto">
+          Powerful tools designed to help you make the best purchasing decisions
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
         <div
           v-for="(feature, idx) in features"
           :key="feature.title"
-          class="card p-6 animate-slide-up"
+          class="feature-card group animate-slide-up"
           :style="`animation-delay: ${idx * 100}ms`"
         >
-          <div class="text-4xl mb-4">{{ feature.icon }}</div>
-          <h3 class="text-h3 mb-2">{{ feature.title }}</h3>
-          <p class="text-text-secondary">{{ feature.description }}</p>
+          <div class="feature-icon mb-4">
+            <span class="text-3xl">{{ feature.icon }}</span>
+          </div>
+          <h3 class="text-xl font-semibold mb-2 text-text-primary group-hover:text-accent transition-colors">
+            {{ feature.title }}
+          </h3>
+          <p class="text-text-secondary leading-relaxed">
+            {{ feature.description }}
+          </p>
         </div>
       </div>
     </section>
 
     <!-- Featured Products -->
-    <section v-if="featuredProducts && featuredProducts.length > 0" class="container-custom py-16">
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="text-h2">Featured Products</h2>
-        <NuxtLink to="/products" class="text-accent hover:underline">
-          View All →
+    <section v-if="featuredProducts && featuredProducts.length > 0" class="container-custom py-20 md:py-32">
+      <div class="flex items-center justify-between mb-12">
+        <div>
+          <h2 class="text-3xl md:text-4xl font-bold mb-2">Featured Products</h2>
+          <p class="text-text-secondary">Popular items being compared right now</p>
+        </div>
+        <NuxtLink to="/products" class="hidden sm:flex items-center gap-2 text-accent hover:text-accent-dark transition-colors group">
+          <span class="font-medium">View All</span>
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
         </NuxtLink>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -55,49 +121,74 @@
     </section>
 
     <!-- Popular Categories -->
-    <section v-if="categories && categories.length > 0" class="container-custom py-16">
-      <h2 class="text-h2 mb-8">Browse by Category</h2>
+    <section v-if="categories && categories.length > 0" class="container-custom py-20 md:py-32 bg-secondary/50">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-3">Browse by Category</h2>
+        <p class="text-text-secondary">Explore products organized by type</p>
+      </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         <NuxtLink
           v-for="category in categories"
           :key="category.id"
           :to="`/categories/${category.slug}`"
-          class="category-card"
+          class="category-card group"
         >
-          <div class="category-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+          <div class="category-icon-modern">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
           </div>
-          <h3 class="category-name">{{ category.name }}</h3>
-          <p v-if="category.description" class="category-description">{{ category.description }}</p>
-          <span class="category-count">{{ category._count?.products || 0 }} products</span>
+          <div class="flex-1">
+            <h3 class="category-name">{{ category.name }}</h3>
+            <p v-if="category.description" class="category-description">{{ category.description }}</p>
+          </div>
+          <div class="flex items-center justify-between mt-auto">
+            <span class="category-count">{{ category._count?.products || 0 }} products</span>
+            <svg class="w-4 h-4 text-text-tertiary group-hover:text-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </div>
         </NuxtLink>
       </div>
     </section>
 
     <!-- Stats Section -->
-    <section class="bg-primary-secondary py-16 mt-16">
-      <div class="container-custom">
-        <div class="grid md:grid-cols-4 gap-8 text-center">
-          <div v-for="stat in stats" :key="stat.label">
-            <div class="text-h1 text-accent mb-2">{{ stat.value }}</div>
-            <div class="text-text-secondary">{{ stat.label }}</div>
+    <section class="relative py-20 md:py-32 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/5 to-transparent" />
+      <div class="container-custom relative">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold mb-3">Trusted by Smart Shoppers</h2>
+          <p class="text-text-secondary">Join our growing community</p>
+        </div>
+        <div class="grid md:grid-cols-4 gap-8">
+          <div v-for="stat in stats" :key="stat.label" class="text-center">
+            <div class="text-4xl md:text-5xl font-bold text-accent mb-2">{{ stat.value }}</div>
+            <div class="text-text-secondary font-medium">{{ stat.label }}</div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="container-custom py-20">
-      <div class="card p-12 text-center bg-gradient-to-br from-accent/10 to-accent/5">
-        <h2 class="text-h2 mb-4">Ready to Make Smarter Purchases?</h2>
-        <p class="text-lg text-text-secondary mb-8 max-w-2xl mx-auto">
-          Join thousands of smart shoppers who use Tulana Darshaka to compare products and save money.
-        </p>
-        <NuxtLink to="/products" class="btn btn-primary btn-lg">
-          Get Started Free
-        </NuxtLink>
+    <section class="container-custom py-20 md:py-32">
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-accent via-accent-dark to-accent p-12 md:p-16 text-center">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.1),transparent_70%)]" />
+        <div class="relative">
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">
+            Ready to Make Smarter Purchases?
+          </h2>
+          <p class="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
+            Join thousands of informed shoppers making better decisions every day
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <NuxtLink to="/products" class="btn-hero-cta">
+              Get Started Free
+            </NuxtLink>
+            <NuxtLink to="/comparisons" class="btn-hero-cta-secondary">
+              View Comparisons
+            </NuxtLink>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -114,17 +205,17 @@ const features = [
   {
     icon: '⚡',
     title: 'Smart Comparisons',
-    description: 'Compare products side-by-side with intelligent highlighting of key differences.'
+    description: 'Compare products side-by-side with intelligent highlighting of key differences and specifications that matter most.'
   },
   {
     icon: '📊',
-    title: 'Price Tracking',
-    description: 'Track historical prices and get alerts when prices drop on your favorite products.'
+    title: 'Real-Time Tracking',
+    description: 'Monitor price changes, availability, and trends across multiple retailers in real-time.'
   },
   {
     icon: '⭐',
-    title: 'Expert Reviews',
-    description: 'Read detailed reviews from experts and real users to make informed decisions.'
+    title: 'Verified Reviews',
+    description: 'Access authentic reviews from verified buyers and expert opinions to make confident decisions.'
   },
 ]
 
@@ -199,66 +290,106 @@ useHead({
 </script>
 
 <style scoped>
+/* Hero Buttons */
+.btn-hero {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 text-base;
+}
+
+.btn-hero-primary {
+  @apply bg-accent text-white hover:bg-accent-dark shadow-lg hover:shadow-xl hover:-translate-y-0.5;
+}
+
+.btn-hero-secondary {
+  @apply bg-primary text-text-primary border border-border hover:border-accent hover:text-accent;
+}
+
+/* CTA Buttons */
+.btn-hero-cta {
+  @apply inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-accent font-semibold transition-all duration-200 shadow-xl hover:shadow-2xl hover:-translate-y-1;
+}
+
+.btn-hero-cta:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.btn-hero-cta-secondary {
+  @apply inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white font-semibold border-2 transition-all duration-200;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-hero-cta-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Feature Cards */
+.feature-card {
+  @apply relative p-8 rounded-2xl bg-primary border border-border hover:border-accent transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+}
+
+.feature-icon {
+  @apply w-14 h-14 rounded-xl flex items-center justify-center;
+  background: linear-gradient(135deg, rgba(35, 131, 226, 0.1), rgba(35, 131, 226, 0.05));
+}
+
+/* Category Cards */
 .category-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 24px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-primary);
-  border-radius: 12px;
-  transition: all 0.2s ease;
+  @apply flex flex-col gap-4 p-6 bg-primary border border-border rounded-xl transition-all duration-200 hover:border-accent hover:shadow-lg hover:-translate-y-1;
   text-decoration: none;
 }
 
-.category-card:hover {
-  border-color: var(--accent-primary);
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+.category-icon-modern {
+  @apply w-12 h-12 rounded-lg bg-gradient-to-br from-accent to-accent-dark flex items-center justify-center text-white;
 }
 
-.category-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  border-radius: 12px;
-  color: white;
-}
-
-.category-icon svg {
-  width: 28px;
-  height: 28px;
+.category-icon-modern svg {
+  @apply w-6 h-6;
 }
 
 .category-name {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
+  @apply text-lg font-semibold text-text-primary group-hover:text-accent transition-colors;
 }
 
 .category-description {
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.5;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  @apply text-sm text-text-secondary leading-relaxed line-clamp-2;
 }
 
 .category-count {
-  font-size: 13px;
-  color: var(--text-tertiary);
-  margin-top: auto;
+  @apply text-xs font-medium text-text-tertiary;
 }
 
-.btn-lg {
-  padding: 14px 32px;
-  font-size: 16px;
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gradient text support */
+.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  .btn-hero {
+    @apply w-full;
+  }
 }
 </style>
