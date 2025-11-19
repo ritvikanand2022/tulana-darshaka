@@ -1,6 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsOptional, IsEnum, Min } from 'class-validator';
-import { ProductStatus, StockStatus } from '@prisma/client';
+
+export enum ProductStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  DISCONTINUED = 'DISCONTINUED',
+}
+
+export enum StockStatus {
+  IN_STOCK = 'IN_STOCK',
+  OUT_OF_STOCK = 'OUT_OF_STOCK',
+  PRE_ORDER = 'PRE_ORDER',
+  DISCONTINUED = 'DISCONTINUED',
+}
 
 export class CreateProductDto {
   @ApiProperty({ example: 'MacBook Pro 14"' })

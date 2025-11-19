@@ -1,7 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsNumber, IsEnum, Min, Max, IsBoolean } from 'class-validator';
-import { ReviewStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
+
+export enum ReviewStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  FLAGGED = 'FLAGGED',
+}
 
 export class QueryReviewsDto {
   @ApiProperty({ required: false, example: 1 })

@@ -47,12 +47,12 @@ export class ProductsService {
   }
 
   async findAll(query: QueryProductsDto) {
-    const { page, pageSize, search, categoryId, brand, minPrice, maxPrice, status, stockStatus, sortBy, sortOrder } = query;
+    const { page = 1, pageSize = 12, search, categoryId, brand, minPrice, maxPrice, status, stockStatus, sortBy, sortOrder } = query;
 
     const skip = (page - 1) * pageSize;
 
     // Build where clause
-    const where: Prisma.ProductWhereInput = {};
+    const where: any = {};
 
     if (search) {
       where.OR = [
@@ -89,8 +89,10 @@ export class ProductsService {
     }
 
     // Build orderBy
-    const orderBy: Prisma.ProductOrderByWithRelationInput = {};
-    orderBy[sortBy] = sortOrder;
+    const orderBy: any = {};
+    if (sortBy) {
+      orderBy[sortBy] = sortOrder;
+    }
 
     // Execute query
     const [products, total] = await Promise.all([
@@ -223,7 +225,7 @@ export class ProductsService {
   }
 
   async getStats(categoryId?: string) {
-    const where: Prisma.ProductWhereInput = categoryId ? { categoryId } : {};
+    const where: any = categoryId ? { categoryId } : {};
 
     const [total, active, outOfStock] = await Promise.all([
       this.prisma.product.count({ where }),

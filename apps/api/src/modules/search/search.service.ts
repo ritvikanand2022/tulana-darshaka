@@ -120,7 +120,7 @@ export class SearchService {
     ]);
 
     // Calculate relevance score
-    const productsWithScore = products.map(product => {
+    const productsWithScore = products.map((product: any) => {
       let score = 0;
       const productText = `${product.name} ${product.brand} ${product.description}`.toLowerCase();
 
@@ -153,7 +153,7 @@ export class SearchService {
     });
 
     // Sort by relevance
-    productsWithScore.sort((a, b) => b.relevanceScore - a.relevanceScore);
+    productsWithScore.sort((a: any, b: any) => b.relevanceScore - a.relevanceScore);
 
     return { products: productsWithScore, total };
   }
@@ -267,13 +267,13 @@ export class SearchService {
     });
 
     const suggestions = [
-      ...products.map(p => ({
+      ...products.map((p: any) => ({
         type: 'product',
         text: p.name,
         subtext: p.brand,
         url: `/products/${p.slug}`,
       })),
-      ...categories.map(c => ({
+      ...categories.map((c: any) => ({
         type: 'category',
         text: c.name,
         url: `/categories/${c.slug}`,
@@ -296,7 +296,7 @@ export class SearchService {
     });
 
     return {
-      searches: products.map(p => ({
+      searches: products.map((p: any) => ({
         query: p.name,
         url: `/products/${p.slug}`,
       })),

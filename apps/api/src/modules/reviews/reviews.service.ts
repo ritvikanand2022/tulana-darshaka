@@ -55,12 +55,12 @@ export class ReviewsService {
   }
 
   async findAll(query: QueryReviewsDto) {
-    const { page, pageSize, productId, userId, rating, status, verified, sortBy } = query;
+    const { page = 1, pageSize = 10, productId, userId, rating, status, verified, sortBy } = query;
 
     const skip = (page - 1) * pageSize;
 
     // Build where clause
-    const where: Prisma.ReviewWhereInput = {};
+    const where: any = {};
 
     if (productId) {
       where.productId = productId;
@@ -86,7 +86,7 @@ export class ReviewsService {
     }
 
     // Build orderBy
-    let orderBy: Prisma.ReviewOrderByWithRelationInput = {};
+    let orderBy: any = {};
 
     switch (sortBy) {
       case 'helpful':
@@ -326,8 +326,9 @@ export class ReviewsService {
 
     let totalRating = 0;
 
-    reviews.forEach((review) => {
-      ratingDistribution[review.rating]++;
+    reviews.forEach((review: any) => {
+      const rating = review.rating as 1 | 2 | 3 | 4 | 5;
+      ratingDistribution[rating]++;
       totalRating += review.rating;
     });
 

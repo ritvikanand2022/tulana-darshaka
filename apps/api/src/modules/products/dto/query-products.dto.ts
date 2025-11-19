@@ -1,7 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsNumber, IsEnum, Min } from 'class-validator';
-import { ProductStatus, StockStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
+
+export enum ProductStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  DISCONTINUED = 'DISCONTINUED',
+}
+
+export enum StockStatus {
+  IN_STOCK = 'IN_STOCK',
+  OUT_OF_STOCK = 'OUT_OF_STOCK',
+  PRE_ORDER = 'PRE_ORDER',
+  DISCONTINUED = 'DISCONTINUED',
+}
 
 export class QueryProductsDto {
   @ApiProperty({ required: false, example: 1 })

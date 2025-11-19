@@ -127,8 +127,8 @@ export class ComparisonsService {
     });
 
     // Return comparison with products in the same order as productIds
-    const orderedProducts = comparison.productIds.map((id) =>
-      products.find((p) => p.id === id),
+    const orderedProducts = comparison.productIds.map((id: string) =>
+      products.find((p: any) => p.id === id),
     );
 
     return {
@@ -203,7 +203,7 @@ export class ComparisonsService {
     }
 
     // Return products in the same order as productIds
-    const orderedProducts = productIds.map((id) => products.find((p) => p.id === id));
+    const orderedProducts = productIds.map((id: string) => products.find((p: any) => p.id === id));
 
     return {
       products: orderedProducts.filter(Boolean),
