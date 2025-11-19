@@ -8,7 +8,6 @@
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "type-check": "nuxt typecheck"
   },
@@ -25,7 +24,6 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^1.0.6",
     "@nuxtjs/tailwindcss": "^6.11.2",
     "@types/node": "^20.10.6",
     "@typescript-eslint/eslint-plugin": "^6.18.0",
@@ -35,6 +33,7 @@
     "eslint-plugin-vue": "^9.19.2",
     "prettier": "^3.1.1",
     "sass": "^1.69.7",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0"
   }
 }

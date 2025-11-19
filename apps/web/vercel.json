@@ -2,13 +2,14 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".output/public",
   "devCommand": "npm run dev",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "npm install --legacy-peer-deps --no-workspaces",
   "framework": "nuxtjs",
   "build": {
     "env": {
       "NODE_VERSION": "20",
       "NPM_FLAGS": "--legacy-peer-deps",
-      "NITRO_PRESET": "node-server"
+      "NITRO_PRESET": "node-server",
+      "CI": "true"
     }
   },
   "headers": [
