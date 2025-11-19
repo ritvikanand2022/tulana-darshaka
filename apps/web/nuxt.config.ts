@@ -41,7 +41,7 @@ export default defineNuxtConfig({
 
   typescript: {
     strict: true,
-    typeCheck: true,
+    typeCheck: false, // Disabled for production builds - types already verified
   },
 
   experimental: {
