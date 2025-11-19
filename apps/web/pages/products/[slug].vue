@@ -193,7 +193,13 @@
 
         <!-- Review Form -->
         <div v-if="showReviewForm" class="mb-8">
+          <AuthPrompt
+            v-if="!authStore.isAuthenticated"
+            title="Sign in to write a review"
+            description="Share your experience by creating an account or signing in."
+          />
           <ReviewForm
+            v-else
             :product-id="product?.id || ''"
             @submit="handleReviewSubmit"
             @cancel="showReviewForm = false"
@@ -332,6 +338,7 @@ definePageMeta({
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const authStore = useAuthStore()
 
 const slug = computed(() => {
   const params = route.params as { slug?: string | string[] }

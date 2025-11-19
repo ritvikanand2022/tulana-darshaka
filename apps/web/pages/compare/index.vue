@@ -58,6 +58,20 @@
         <p class="mt-4 text-text-secondary">Loading products...</p>
       </div>
 
+      <!-- Auth Prompt Modal -->
+      <div
+        v-if="showAuthPrompt"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        @click="showAuthPrompt = false"
+      >
+        <div class="max-w-md w-full" @click.stop>
+          <AuthPrompt
+            title="Sign in to save comparison"
+            description="Create an account or sign in to save and share your product comparisons."
+          />
+        </div>
+      </div>
+
       <!-- Comparison Table -->
       <div v-else-if="products.length >= 2">
         <ComparisonTable
@@ -128,8 +142,17 @@ const handleRemoveProduct = (productId: string) => {
   }
 }
 
+const authStore = useAuthStore()
+const showAuthPrompt = ref(false)
+
 // Handle share
 const handleShare = async () => {
+  // Check authentication
+  if (!authStore.isAuthenticated) {
+    showAuthPrompt.value = true
+    return
+  }
+
   try {
     const comparison = await comparisonStore.saveComparison() as any
     const shareUrl = `${config.public.siteUrl}/compare/${comparison.slug}`

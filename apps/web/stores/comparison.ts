@@ -109,8 +109,9 @@ export const useComparisonStore = defineStore('comparison', {
         throw new Error('You need at least 2 products to create a comparison')
       }
 
+      const { apiFetch } = useApi()
       const config = useRuntimeConfig()
-      const response = await $fetch(`${config.public.apiUrl}/api/comparisons`, {
+      const response = await apiFetch(`${config.public.apiUrl}/api/comparisons`, {
         method: 'POST',
         body: {
           title,

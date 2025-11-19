@@ -10,6 +10,8 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { apiFetch } = useApi()
+
 const rating = ref(0)
 const hoverRating = ref(0)
 const title = ref('')
@@ -79,7 +81,7 @@ async function handleSubmit() {
       cons: cons.value.filter(c => c.trim() !== ''),
     }
 
-    const response = await $fetch('/api/reviews', {
+    const response = await apiFetch('/api/reviews', {
       method: 'POST',
       body: reviewData,
     })
