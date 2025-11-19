@@ -208,6 +208,32 @@
           </button>
         </div>
 
+        <!-- Demo Credentials -->
+        <div class="mt-8 p-4 rounded-lg bg-accent/5 border border-accent/20">
+          <div class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-accent flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-text-primary mb-2">Try Demo Accounts</p>
+              <div class="space-y-2 text-xs text-text-secondary">
+                <div class="font-mono bg-primary-secondary p-2 rounded">
+                  <div><span class="text-text-tertiary">Email:</span> <span class="text-accent">demo@comparo.com</span></div>
+                  <div><span class="text-text-tertiary">Pass:</span> demo123</div>
+                </div>
+                <div class="font-mono bg-primary-secondary p-2 rounded">
+                  <div><span class="text-text-tertiary">Email:</span> <span class="text-accent">john@example.com</span></div>
+                  <div><span class="text-text-tertiary">Pass:</span> password123</div>
+                </div>
+                <div class="font-mono bg-primary-secondary p-2 rounded">
+                  <div><span class="text-text-tertiary">Email:</span> <span class="text-accent">admin@comparo.com</span></div>
+                  <div><span class="text-text-tertiary">Pass:</span> admin123 <span class="text-xs text-warning">(Admin)</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Sign Up Link -->
         <p class="mt-8 text-center text-sm text-text-secondary">
           Don't have an account?
